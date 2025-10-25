@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-=ul0qn1@h6n*6z(gv3+xov-c1!+e_j^=14wlq^08nf(c+^11=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Change it to this (copy the URL from your Vercel dashboard):
+ALLOWED_HOSTS = [
+    'aiqrgenerator-umber.vercel.app', 
+    '127.0.0.1'
+]
 
 
 # Application definition
@@ -123,10 +127,20 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 import os 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
 # Create the static directory for the placeholder image
 # mkdir -p qrhome/static/qrhome/img
+
+
+
+# ... (rest of your settings.py) ...
+
+STATIC_URL = '/static/'
+
+# This is the directory where `collectstatic` will put all static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
+
+# This tells Django where to find your app's static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'), 
+]
