@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+# (We are inside the env, so we must be careful)
+# This .gitignore is inside the 'core' folder, so 
+# we need to tell it to ignore the database in this folder.
+db.sqlite3
+db.sqlite3-journal
+
+# IDE Folders
+.idea/
+.vscode/
+
+# Django
+*.log
