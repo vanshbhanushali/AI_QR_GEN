@@ -16,7 +16,7 @@ import base64
 from PIL import Image
 
 # Gemini API Imports
-from google import genai 
+import google.generativeai as genai
 from google.genai.errors import APIError
 
 # --- Configuration ---
