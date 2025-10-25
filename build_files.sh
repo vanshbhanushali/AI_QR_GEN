@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Install dependencies using python3.10's pip module
-python3.10 -m pip install -r requirements.txt 
+# Install dependencies using the environment's pip
+python -m pip install -r requirements.txt 
 
-# Run database migrations using python3.10
-python3.10 manage.py migrate
+# Run database migrations using the environment's python
+python manage.py migrate
 
-# Collect static files using python3.10
-python3.10 manage.py collectstatic --noinput --clear
+# Collect static files using the environment's python
+python manage.py collectstatic --noinput --clear
