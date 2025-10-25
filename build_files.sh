@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Install dependencies using the environment's pip
-python -m pip install -r requirements.txt 
+# Install dependencies using pip3 (associated with Python 3.9 runtime)
+python3.9 -m pip install -r requirements.txt 
 
-# Run database migrations using the environment's python
-python manage.py migrate
+# Run database migrations using python3.9
+python3.9 manage.py migrate
 
-# Collect static files using the environment's python
-python manage.py collectstatic --noinput --clear
+# Collect static files using python3.9
+python3.9 manage.py collectstatic --noinput --clear
