@@ -28,10 +28,12 @@ DEBUG = True
 
 # Change it to this (copy the URL from your Vercel dashboard):
 ALLOWED_HOSTS = [
-    'aiqrgenerator-umber.vercel.app', 
-    '127.0.0.1'
+    'ai-qr-gen-new.vercel.app',  # Main production domain
+    'ai-qr-gen-new-git-main-vanshs-projects-e038ee73.vercel.app', # Preview domain
+    'ai-qr-gen-eo2ql5lir-vanshs-projects-e038ee73.vercel.app', # Preview domain from previous error
+    '.vercel.app', # Allows any Vercel subdomain (covers future previews)
+    '127.0.0.1', # For local development
 ]
-
 
 # Application definition
 
