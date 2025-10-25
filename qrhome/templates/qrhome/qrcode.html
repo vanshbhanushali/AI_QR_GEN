@@ -1,0 +1,164 @@
+{% extends "qrhome/base.html" %} {%load static %} {% block title %}Generate QR
+Code{% endblock %} {% block content %}
+<h1 class="text-center my-4 text-primary">Create Your Smart QR Code</h1>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card shadow p-4 mb-4">
+      <h3 class="card-title text-success">Generation Form</h3>
+      <form
+        method="POST"
+        action="{% url 'qrhome:qrcode_generator' %}"
+        id="qr-form"
+      >
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="data_content" class="form-label fw-bold"
+            >1. Enter Text, Link, or Data</label
+          >
+          <textarea
+            class="form-control"
+            id="data_content"
+            name="data_content"
+            rows="3"
+            placeholder="e.g., https://yourwebsite.com or Your custom message..."
+            required
+          ></textarea>
+          <div class="form-text">
+            This is the content the QR code will encode.
+          </div>
+        </div>
+
+        <div class="mb-3 border p-3 rounded bg-light">
+          <label for="prompt_used" class="form-label fw-bold text-info"
+            >2. AI Assistance (Optional)</label
+          >
+          <p class="small text-muted">
+            Have no idea what to say? Just enter a prompt! The AI will generate
+            content into the box above.
+          </p>
+          <input
+            type="text"
+            class="form-control"
+            id="prompt_used"
+            name="prompt_used"
+            placeholder="e.g., Generate a link to my contact card for a business card"
+          />
+          <button
+            type="button"
+            class="btn btn-info btn-sm mt-2"
+            id="ai-generate-btn"
+          >
+            <i class="bi bi-robot"></i> Use AI to get content
+          </button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+          <i class="bi bi-qr-code"></i> Generate QR Code
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card shadow p-4 text-center" id="qr-display-card">
+      <h3 class="card-title text-secondary">Generated QR Code</h3>
+
+      <div id="qr-code-output" class="p-3 border rounded mb-3 bg-white">
+        {% if qr_code_base64 %}
+        <img
+          src="data:image/png;base64,{{ qr_code_base64 }}"
+          alt="Generated QR Code"
+          class="img-fluid"
+          style="max-width: 300px"
+        />
+        <p class="mt-3 text-success fw-bold">QR Code successfully generated!</p>
+        {% else %}
+        <img
+          src="{% static 'qrhome/img/placeholder_qr.png' %}"
+          alt="Placeholder QR"
+          class="img-fluid"
+          style="max-width: 300px; opacity: 0.5"
+        />
+        <p class="mt-3 text-muted">Your generated QR code will appear here.</p>
+        {% endif %}
+      </div>
+
+      {% if qr_code_base64 %}
+      <a
+        href="#"
+        download="AIQRGen_{{ user.username }}_{{ now|date:'Ymd_His' }}.png"
+        class="btn btn-warning mt-2"
+      >
+        Download QR Code
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% block extra_js %}
+<script>
+  document
+    .getElementById("ai-generate-btn")
+    .addEventListener("click", function () {
+      const promptInput = document.getElementById("prompt_used");
+      const contentTextarea = document.getElementById("data_content");
+      const aiButton = this;
+      const originalButtonText = aiButton.innerHTML;
+
+      const prompt = promptInput.value.trim();
+      if (!prompt) {
+        alert("Please enter a prompt in the AI assistance box.");
+        return;
+      }
+
+      // Disable button and show loading state
+      aiButton.disabled = true;
+      aiButton.innerHTML =
+        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+
+      // Get Django CSRF token
+      const csrftoken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+      ).value;
+
+      // Use Fetch API for AJAX
+      fetch("{% url 'qrhome:qrcode_generator' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Requested-With": "XMLHttpRequest", // Important for view detection
+          "X-CSRFToken": csrftoken,
+        },
+        body: `prompt_used=${encodeURIComponent(prompt)}`,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            // Read the response text for better error messages
+            return response.json().then((data) => {
+              throw new Error(data.error || "AI generation failed.");
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.content) {
+            // Insert the generated content into the main textarea
+            contentTextarea.value = data.content;
+            // Provide visual feedback
+            contentTextarea.focus();
+          }
+        })
+        .catch((error) => {
+          console.error("AI Error:", error);
+          alert(`Error fetching AI content: ${error.message}`);
+        })
+        .finally(() => {
+          // Restore button state
+          aiButton.disabled = false;
+          aiButton.innerHTML = originalButtonText;
+        });
+    });
+</script>
+{% endblock extra_js %} {% endblock content %}

@@ -1,0 +1,91 @@
+{% extends "qrhome/base.html" %} {% load static %} {% block title %}Generation
+History{% endblock %} {% block content %}
+<h1 class="my-4 text-center text-secondary">Your Generation History</h1>
+
+{% if history %}
+<p class="text-center lead">
+  You have generated <strong>{{ count }}</strong> QR codes so far.
+</p>
+
+<div class="table-responsive">
+  <table class="table table-hover table-striped shadow-sm">
+    <thead class="bg-primary text-white">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Generated At</th>
+        <th scope="col">Encoded Content</th>
+        <th scope="col">AI Prompt Used</th>
+        <th scope="col">QR Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in history %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ item.generated_at|date:"Y-m-d H:i:s" }}</td>
+        <td>
+          <code class="text-break small"
+            >{{ item.data_content|truncatechars:50 }}</code
+          >
+        </td>
+        <td>
+          {% if item.prompt_used %}
+          <span class="badge bg-info"
+            >{{ item.prompt_used|truncatechars:30 }}</span
+          >
+          {% else %}
+          <span class="badge bg-secondary">N/A</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="#qrModal{{ item.id }}" data-bs-toggle="modal">
+            <img
+              src="data:image/png;base64,{{ item.qr_code_path }}"
+              alt="QR Code"
+              style="height: 50px; width: 50px"
+            />
+          </a>
+        </td>
+      </tr>
+
+      <div class="modal fade" id="qrModal{{ item.id }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                QR Code for: {{ item.data_content|truncatechars:30 }}
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body text-center">
+              <img
+                src="data:image/png;base64,{{ item.qr_code_path }}"
+                alt="QR Code"
+                class="img-fluid"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="alert alert-warning text-center mt-5">
+  <h4 class="alert-heading">No History Found!</h4>
+  <p>
+    You haven't generated any QR codes yet. Go to the
+    <a href="{% url 'qrhome:qrcode_generator' %}" class="alert-link"
+      >generator page</a
+    >
+    to create your first one!
+  </p>
+</div>
+{% endif %} {% endblock content %}
