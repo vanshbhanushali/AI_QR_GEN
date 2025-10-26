@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import dj_database_url
 from pathlib import Path
 import os 
-
+from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -78,27 +78,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Database Configuration
+DATABASES = {} # Start with an empty dictionary
 
-# Vercel Database Configuration
 if 'DATABASE_URL' in os.environ:
-    # Use the Vercel (Neon) database in production
-    DATABASES = {
-        'default': dj_database_url.config(
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
+    print("DATABASE_URL found, configuring PostgreSQL.") # Debug print
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True,
+        # Explicitly set the engine just in case dj_database_url has issues
+        engine='django.db.backends.postgresql' 
+    )
 else:
-    # Use SQLite for local development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+    # Only configure SQLite if DATABASE_URL is NOT set (for local dev)
+    print("DATABASE_URL not found, configuring SQLite.") # Debug print
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 
+# Add a check to ensure database is configured
+if not DATABASES:
+    raise ImproperlyConfigured("DATABASES setting is empty. Check DATABASE_URL environment variable.")
+
+# ... rest of settings ...
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
