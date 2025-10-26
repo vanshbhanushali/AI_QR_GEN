@@ -12,7 +12,7 @@ IS_VERCEL_BUILD = os.environ.get('VERCEL_ENV') == 'production'
 if IS_VERCEL_BUILD:
     print("Build Hook: Vercel build environment detected.")
     # Use python3.11 as specified in vercel.json
-    PYTHON_EXEC = "python3.11" 
+    PYTHON_EXEC = "python" 
     try:
         print("Build Hook: Running migrate...")
         # Use check=True to raise an error if the command fails
